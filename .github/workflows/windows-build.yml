@@ -1,0 +1,45 @@
+name: Windows Binaries
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+        include:
+          - arch: x64
+            devcmd_arch: amd64
+            preset: x64-windows-msvc-release
+          - arch: arm64
+            devcmd_arch: amd64_arm64
+            preset: arm64-windows-llvm-release
+            extra_flags: "-DGGML_OPENMP=OFF"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.devcmd_arch }}
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }} ${{ matrix.extra_flags }}
+
+      - name: Build
+        run: cmake --build build-${{ matrix.preset }} --parallel
+
+      - name: Install
+        run: cmake --install build-${{ matrix.preset }} --prefix install
+
+      - name: Package artifacts
+        run: Compress-Archive -Path install/* -DestinationPath ${{ matrix.arch }}-binaries.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.arch }}-binaries
+          path: ${{ matrix.arch }}-binaries.zip
