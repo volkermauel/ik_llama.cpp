@@ -39,7 +39,7 @@ jobs:
       - name: Package artifacts
         run: Compress-Archive -Path install/* -DestinationPath ${{ matrix.arch }}-binaries.zip
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: windows-${{ matrix.arch }}-binaries
           path: ${{ matrix.arch }}-binaries.zip
