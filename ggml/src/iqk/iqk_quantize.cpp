@@ -34,14 +34,23 @@
 #if defined(_MSC_VER)
 #pragma warning(disable: 4244 4267) // possible loss of data
 #include <intrin.h>
+#if defined(_M_X64) || defined(_M_IX86)
 #include <ammintrin.h>
 #include <nmmintrin.h>
 #include <immintrin.h>
+#endif
 #include <stdlib.h>
-inline int popcount(uint8_t x) { return __popcnt(x); }
+#if defined(_M_X64) || defined(_M_IX86)
+inline int popcount(uint8_t x)  { return __popcnt(x); }
 inline int popcount(uint16_t x) { return __popcnt(x); }
 inline int popcount(uint32_t x) { return __popcnt(x); }
 inline int popcount(uint64_t x) { return _mm_popcnt_u64(x); }
+#else
+inline int popcount(uint8_t x)  { return __builtin_popcount(x); }
+inline int popcount(uint16_t x) { return __builtin_popcount(x); }
+inline int popcount(uint32_t x) { return __builtin_popcount(x); }
+inline int popcount(uint64_t x) { return __builtin_popcountll(x); }
+#endif
 #else
 constexpr int popcount(uint8_t x) { return __builtin_popcount(x); }
 constexpr int popcount(uint16_t x) { return __builtin_popcount(x); }
