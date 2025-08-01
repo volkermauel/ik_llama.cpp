@@ -13,6 +13,7 @@ set( arch_c_flags "-march=armv8.7-a -Xclang -target-feature -Xclang +fullfp16 -f
 set( warn_c_flags "-Wno-format -Wno-unused-variable -Wno-unused-function -Wno-gnu-zero-variadic-macro-arguments" )
 
 set( CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "DWARF" )
-set( debug_flags "-gdwarf-4" )
+# disable implicit CodeView debug info generation
+set( debug_flags "-gdwarf-4 -Xclang -gno-codeview" )
 set( CMAKE_C_FLAGS_INIT   "${arch_c_flags} ${warn_c_flags} ${debug_flags}" )
 set( CMAKE_CXX_FLAGS_INIT "${arch_c_flags} ${warn_c_flags} ${debug_flags}" )
