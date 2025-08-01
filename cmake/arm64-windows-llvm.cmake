@@ -12,5 +12,14 @@ set( CMAKE_CXX_COMPILER_TARGET ${target} )
 set( arch_c_flags "-march=armv8.7-a -Xclang -target-feature -Xclang +fullfp16 -fvectorize -ffp-model=fast -fno-finite-math-only" )
 set( warn_c_flags "-Wno-format -Wno-unused-variable -Wno-unused-function -Wno-gnu-zero-variadic-macro-arguments" )
 
-set( CMAKE_C_FLAGS_INIT   "${arch_c_flags} ${warn_c_flags}" )
-set( CMAKE_CXX_FLAGS_INIT "${arch_c_flags} ${warn_c_flags}" )
+set( CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "" )
+set( base_flags "${arch_c_flags} ${warn_c_flags}" )
+
+# Disable debug info on Windows/ARM64 as it triggers LLVM crashes
+foreach(cfg RELWITHDEBINFO RELEASE DEBUG MINSIZEREL)
+    set("CMAKE_C_FLAGS_${cfg}"   "${base_flags} -O2")
+    set("CMAKE_CXX_FLAGS_${cfg}" "${base_flags} -O2")
+endforeach()
+
+set( CMAKE_C_FLAGS_INIT   "${base_flags}" )
+set( CMAKE_CXX_FLAGS_INIT "${base_flags}" )

@@ -445,7 +445,7 @@ static inline ggml_fp16_t ggml_compute_fp32_to_fp16(float f) {
 #include <intrin.h>
 #else
 #if defined(__AVX__) || defined(__AVX2__) || defined(__AVX512F__) || defined(__SSSE3__) || defined(__SSE3__) || defined(__SSE__)
-#if !defined(__riscv)
+#if !defined(__riscv) && !defined(__aarch64__)
 #include <immintrin.h>
 #endif
 #endif
