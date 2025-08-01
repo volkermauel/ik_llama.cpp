@@ -247,7 +247,7 @@ endif
 #
 
 # keep standard at C11 and C++17
-MK_CPPFLAGS  = -Iggml/include -Iggml/src -Iinclude -Isrc -Icommon
+MK_CPPFLAGS  = -Iggml/include -Iggml/src -Iinclude -Isrc -Icommon -I.
 MK_CFLAGS    = -std=c11   -fPIC
 MK_CXXFLAGS  = -std=c++17 -fPIC
 MK_NVCCFLAGS = -std=c++17
@@ -1445,24 +1445,11 @@ llama-server: \
 	examples/server/server.cpp \
 	examples/server/utils.hpp \
 	examples/server/httplib.h \
-	examples/server/colorthemes.css.hpp \
-	examples/server/style.css.hpp \
-	examples/server/theme-beeninorder.css.hpp \
-	examples/server/theme-ketivah.css.hpp \
-	examples/server/theme-mangotango.css.hpp \
-	examples/server/theme-playground.css.hpp \
-	examples/server/theme-polarnight.css.hpp \
-	examples/server/theme-snowstorm.css.hpp \
-	examples/server/index.html.hpp \
-	examples/server/index-new.html.hpp \
-	examples/server/index.js.hpp \
-	examples/server/completion.js.hpp \
-	examples/server/system-prompts.js.hpp \
-	examples/server/prompt-formats.js.hpp \
-	examples/server/json-schema-to-grammar.mjs.hpp \
-	common/json.hpp \
-	common/stb_image.h \
-	$(OBJ_ALL)
+       examples/server/index.html.gz.hpp \
+       examples/server/loading.html.hpp \
+       common/json.hpp \
+       common/stb_image.h \
+       $(OBJ_ALL)
 	$(CXX) $(CXXFLAGS) -c $< -o $(call GET_OBJ_FILE, $<)
 	$(CXX) $(CXXFLAGS) $(filter-out %.h %.hpp $<,$^) -Iexamples/server $(call GET_OBJ_FILE, $<) -o $@ $(LDFLAGS) $(LWINSOCK2)
 
