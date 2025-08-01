@@ -15,7 +15,9 @@ set( warn_c_flags "-Wno-format -Wno-unused-variable -Wno-unused-function -Wno-gn
 set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "")
 
 set(base_flags "${arch_c_flags} ${warn_c_flags}")
-set(debug_flags "-g -gdwarf-4")
+# Disable CodeView generation as it causes crashes when cross compiling with
+# clang-cl; instead rely solely on DWARF debug information.
+set(debug_flags "-g -gdwarf-4 -Xclang -gno-codeview")
 
 set(CMAKE_C_FLAGS_INIT   "${base_flags}")
 set(CMAKE_CXX_FLAGS_INIT "${base_flags}")
