@@ -2,7 +2,21 @@
 
 #include "log.h"
 #include "../ggml/include/ggml.h"
+
+// The server utilities header provides logging helpers that depend on
+// global variables such as `server_verbose` and `server_log_json`.  When
+// building components like `llama-cli` these variables are not defined,
+// which results in undefined reference errors at link time.  To allow
+// `json-partial.cpp` to be used without the server, we only include the
+// server utilities when server-specific logging is enabled.  Otherwise we
+// provide a no-op `LOG_VERBOSE` macro.
+#ifdef SERVER_VERBOSE
 #include "../examples/server/utils.hpp"
+#else
+#ifndef LOG_VERBOSE
+#define LOG_VERBOSE(MSG, ...) (void)0
+#endif
+#endif
 
 #include "json.hpp"
 
