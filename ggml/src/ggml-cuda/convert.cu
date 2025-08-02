@@ -355,7 +355,7 @@ float __device__ __forceinline__ trellis_next(uint32_t& val) {
     const half * h = (const half *)&s;
     val = ka*val + kb;
     s = (val & kmask) ^ km32;
-    return (float)(h[0]+h[1]);
+    return __half2float(h[0]) + __half2float(h[1]);
 }
 
 template<typename dst_t>
