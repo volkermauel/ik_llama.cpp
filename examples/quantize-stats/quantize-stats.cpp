@@ -31,17 +31,29 @@
 #include <array>
 #include <random>
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_IX86))
 #pragma warning(disable: 4244 4267) // possible loss of data
 #include <intrin.h>
 #include <ammintrin.h>
 #include <nmmintrin.h>
 #include <immintrin.h>
 #include <stdlib.h>
-inline int popcount(uint8_t x) { return __popcnt(x); }
+inline int popcount(uint8_t x)  { return __popcnt(x); }
 inline int popcount(uint16_t x) { return __popcnt(x); }
 inline int popcount(uint32_t x) { return __popcnt(x); }
 inline int popcount(uint64_t x) { return _mm_popcnt_u64(x); }
+#elif defined(_MSC_VER)
+#include <stdlib.h>
+inline int popcount(uint8_t x)  { return __builtin_popcount(x); }
+inline int popcount(uint16_t x) { return __builtin_popcount(x); }
+inline int popcount(uint32_t x) { return __builtin_popcount(x); }
+inline int popcount(uint64_t x) { return __builtin_popcountll(x); }
+#else
+inline int popcount(uint8_t x)  { return __builtin_popcount(x); }
+inline int popcount(uint16_t x) { return __builtin_popcount(x); }
+inline int popcount(uint32_t x) { return __builtin_popcount(x); }
+inline int popcount(uint64_t x) { return __builtin_popcountll(x); }
+#endif
 #else
 constexpr int popcount(uint8_t x) { return __builtin_popcount(x); }
 constexpr int popcount(uint16_t x) { return __builtin_popcount(x); }

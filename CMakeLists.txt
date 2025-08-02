@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.14) # for add_link_options and implicit target directories.
+
+# Ensure CMAKE_MSVC_DEBUG_INFORMATION_FORMAT is honored
+if(POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+endif()
 project("llama.cpp" C CXX)
 include(CheckIncludeFileCXX)
 
