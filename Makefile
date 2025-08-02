@@ -576,7 +576,15 @@ OBJ_GGML    += ggml/src/iqk/iqk_quantize.o
 ifndef GGML_NO_IQKMULMAT
 	MK_CFLAGS   += -DGGML_USE_IQK_MULMAT
 	MK_CPPFLAGS += -DGGML_USE_IQK_MULMAT
-	OBJ_GGML    += ggml/src/iqk/iqk_mul_mat.o
+        OBJ_GGML    += ggml/src/iqk/iqk_mul_mat.o \
+                       ggml/src/iqk/iqk_gemm_floats.o \
+                       ggml/src/iqk/iqk_gemm_kquants.o \
+                       ggml/src/iqk/iqk_gemm_ktquants.o \
+                       ggml/src/iqk/iqk_gemm_iquants.o \
+                       ggml/src/iqk/iqk_gemm_iqk_quants.o \
+                       ggml/src/iqk/iqk_gemm_legacy_quants.o \
+                       ggml/src/iqk/iqk_gemm_1bit.o \
+                       ggml/src/iqk/iqk_flash_attn.o
 endif
 
 ifndef GGML_NO_LLAMAFILE
@@ -933,14 +941,18 @@ OBJ_LLAMA = \
 	src/unicode-data.o
 
 OBJ_COMMON = \
-	common/common.o \
-	common/console.o \
-	common/ngram-cache.o \
-	common/sampling.o \
-	common/train.o \
-	common/grammar-parser.o \
-	common/build-info.o \
-	common/json-schema-to-grammar.o
+        common/common.o \
+        common/console.o \
+        common/ngram-cache.o \
+        common/sampling.o \
+        common/train.o \
+        common/grammar-parser.o \
+        common/build-info.o \
+        common/json-schema-to-grammar.o \
+        common/chat.o \
+        common/chat-parser.o \
+        common/regex-partial.o \
+        common/json-partial.o
 
 OBJ_ALL = $(OBJ_GGML) $(OBJ_LLAMA) $(OBJ_COMMON)
 
@@ -1080,10 +1092,58 @@ ggml/src/iqk/iqk_quantize.o: \
 
 ifndef GGML_NO_IQKMULMAT
 ggml/src/iqk/iqk_mul_mat.o: \
-	ggml/src/iqk/iqk_mul_mat.cpp \
-	ggml/src/iqk/iqk_mul_mat.h \
-	ggml/src/iqk/iqk_quantize.h \
-	ggml/src/ggml-quants.h ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+        ggml/src/iqk/iqk_mul_mat.cpp \
+        ggml/src/iqk/iqk_mul_mat.h \
+        ggml/src/iqk/iqk_quantize.h \
+        ggml/src/ggml-quants.h ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_floats.o: \
+        ggml/src/iqk/iqk_gemm_floats.cpp \
+        ggml/src/iqk/iqk_gemm_floats.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_kquants.o: \
+        ggml/src/iqk/iqk_gemm_kquants.cpp \
+        ggml/src/iqk/iqk_gemm_kquants.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_ktquants.o: \
+        ggml/src/iqk/iqk_gemm_ktquants.cpp \
+        ggml/src/iqk/iqk_gemm_ktquants.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_iquants.o: \
+        ggml/src/iqk/iqk_gemm_iquants.cpp \
+        ggml/src/iqk/iqk_gemm_iquants.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_iqk_quants.o: \
+        ggml/src/iqk/iqk_gemm_iqk_quants.cpp \
+        ggml/src/iqk/iqk_gemm_iqk_quants.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_legacy_quants.o: \
+        ggml/src/iqk/iqk_gemm_legacy_quants.cpp \
+        ggml/src/iqk/iqk_gemm_legacy_quants.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_gemm_1bit.o: \
+        ggml/src/iqk/iqk_gemm_1bit.cpp \
+        ggml/src/iqk/iqk_gemm_1bit.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+ggml/src/iqk/iqk_flash_attn.o: \
+        ggml/src/iqk/iqk_flash_attn.cpp \
+        ggml/src/iqk/iqk_flash_impl.h ggml/src/iqk/iqk_mul_mat.h \
+        ggml/src/ggml-common.h ggml/include/ggml.h ggml/src/ggml-impl.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 endif # GGML_NO_IQKMULMAT
 
@@ -1194,8 +1254,28 @@ common/console.o: \
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 common/grammar-parser.o: \
-	common/grammar-parser.cpp \
-	common/grammar-parser.h
+        common/grammar-parser.cpp \
+        common/grammar-parser.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+common/chat.o: \
+        common/chat.cpp \
+        common/chat.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+common/chat-parser.o: \
+        common/chat-parser.cpp \
+        common/chat-parser.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+common/regex-partial.o: \
+        common/regex-partial.cpp \
+        common/regex-partial.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+common/json-partial.o: \
+        common/json-partial.cpp \
+        common/json-partial.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 common/json-schema-to-grammar.o: \
