@@ -31,7 +31,7 @@
 #include <unordered_map>
 #include <string>
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_IX86))
 #pragma warning(disable: 4244 4267) // possible loss of data
 #include <intrin.h>
 #include <ammintrin.h>

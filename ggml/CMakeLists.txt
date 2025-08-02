@@ -50,10 +50,29 @@ else()
     set(GGML_BLAS_VENDOR_DEFAULT "Generic")
 endif()
 
-if (CMAKE_CROSSCOMPILING)
+# Disable native builds when cross-compiling or when the target processor
+# differs from the host processor.  In some environments (e.g. Windows
+# arm64 cross-builds using clang), CMake does not set the
+# CMAKE_CROSSCOMPILING flag even though the target architecture is
+# different.  Passing `-march=native` in such cases results in compiler
+# errors, so explicitly check the processor as well.
+if (CMAKE_CROSSCOMPILING OR NOT (CMAKE_SYSTEM_PROCESSOR STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
     set(GGML_NATIVE_DEFAULT OFF)
+    set(GGML_CROSS_DIFFERENT_ARCH ON)
 else()
     set(GGML_NATIVE_DEFAULT ON)
+    set(GGML_CROSS_DIFFERENT_ARCH OFF)
+endif()
+
+# When cross-compiling with clang for Windows the default CodeView debug
+# info can trigger LLVM backend crashes.  In that case, prefer DWARF
+# debug info instead.
+if (GGML_CROSS_DIFFERENT_ARCH AND WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-gdwarf-4)
+    foreach(lang C CXX)
+        string(REGEX REPLACE "-Xclang[ ]+-gcodeview" "" CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}")
+        set(CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}" CACHE STRING "" FORCE)
+    endforeach()
 endif()
 
 # general
