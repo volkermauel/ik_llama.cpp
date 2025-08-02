@@ -50,7 +50,13 @@ else()
     set(GGML_BLAS_VENDOR_DEFAULT "Generic")
 endif()
 
-if (CMAKE_CROSSCOMPILING)
+# Disable native builds when cross-compiling or when the target processor
+# differs from the host processor.  In some environments (e.g. Windows
+# arm64 cross-builds using clang), CMake does not set the
+# CMAKE_CROSSCOMPILING flag even though the target architecture is
+# different.  Passing `-march=native` in such cases results in compiler
+# errors, so explicitly check the processor as well.
+if (CMAKE_CROSSCOMPILING OR NOT (CMAKE_SYSTEM_PROCESSOR STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
     set(GGML_NATIVE_DEFAULT OFF)
 else()
     set(GGML_NATIVE_DEFAULT ON)
