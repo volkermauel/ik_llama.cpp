@@ -286,6 +286,12 @@ if (GGML_IQK_MUL_MAT)
                             iqk/iqk_gemm_iqk_quants.h
                             iqk/iqk_gemm_1bit.h
                             iqk/iqk_gemm_legacy_quants.h)
+    if (MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_GENERATOR_PLATFORM_LWR STREQUAL "arm64")
+        # Workaround for LLVM bug: unknown CodeView register Q4_Q5 when generating
+        # debug info for iqk_gemm_legacy_quants.cpp on Windows ARM64 builds.
+        # Disable debug info for this file to avoid the backend crash.
+        set_property(SOURCE iqk/iqk_gemm_legacy_quants.cpp PROPERTY COMPILE_FLAGS "-g0")
+    endif()
     if (GGML_IQK_FLASH_ATTENTION)
         message(STATUS "Enabling IQK Flash Attention kernels")
         add_compile_definitions(GGML_IQK_FLASH_ATTENTION)
