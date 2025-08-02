@@ -58,6 +58,10 @@
 
 #define IK_PRINT_TIMING 0
 
+#ifndef GGML_CUDA_MIN_BATCH_OFFLOAD
+#define GGML_CUDA_MIN_BATCH_OFFLOAD 32
+#endif
+
 static_assert(sizeof(half) == sizeof(ggml_fp16_t), "wrong fp16 size");
 
 static void ggml_cuda_default_log_callback(enum ggml_log_level level, const char * msg, void * user_data) {

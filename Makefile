@@ -250,7 +250,7 @@ endif
 MK_CPPFLAGS  = -Iggml/include -Iggml/src -Iinclude -Isrc -Icommon -I.
 MK_CFLAGS    = -std=c11   -fPIC
 MK_CXXFLAGS  = -std=c++17 -fPIC
-MK_NVCCFLAGS = -std=c++17
+MK_NVCCFLAGS = -std=c++17 -extended-lambda
 
 ifdef LLAMA_NO_CCACHE
 GGML_NO_CCACHE := 1

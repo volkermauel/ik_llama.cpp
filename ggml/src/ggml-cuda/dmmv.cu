@@ -34,10 +34,18 @@ static __device__ __forceinline__ void trellis_accum(uint32_t& val1, uint32_t& v
     bdot1 = __hfma2(y[ 0], {h[0]+h[1], h[2]+h[3]}, bdot1);
     bdot2 = __hfma2(y[64], {h[4]+h[5], h[6]+h[7]}, bdot2);
 #else
-    bdot1.x += y[ 0].x * (float)(h[0] + h[1]);
-    bdot1.y += y[ 0].y * (float)(h[2] + h[3]);
-    bdot2.x += y[64].x * (float)(h[4] + h[5]);
-    bdot2.y += y[64].y * (float)(h[6] + h[7]);
+    const float h0 = __half2float(h[0]);
+    const float h1 = __half2float(h[1]);
+    const float h2 = __half2float(h[2]);
+    const float h3 = __half2float(h[3]);
+    const float h4 = __half2float(h[4]);
+    const float h5 = __half2float(h[5]);
+    const float h6 = __half2float(h[6]);
+    const float h7 = __half2float(h[7]);
+    bdot1.x += y[ 0].x * (h0 + h1);
+    bdot1.y += y[ 0].y * (h2 + h3);
+    bdot2.x += y[64].x * (h4 + h5);
+    bdot2.y += y[64].y * (h6 + h7);
 #endif
 }
 
@@ -56,10 +64,14 @@ static __device__ __forceinline__ void trellis_accum_abs(uint8_t signs1, uint8_t
     bdot1 = __hfma2(y[ 0], h1, bdot1);
     bdot2 = __hfma2(y[64], h2, bdot2);
 #else
-    bdot1.x += y[ 0].x * fabsf((float)(h[0] + h[1])) * (signs1 & mask1 ? -1 : 1);
-    bdot1.y += y[ 0].y * fabsf((float)(h[2] + h[3])) * (signs2 & mask1 ? -1 : 1);
-    bdot2.x += y[64].x * fabsf((float)(h[4] + h[5])) * (signs1 & mask2 ? -1 : 1);
-    bdot2.y += y[64].y * fabsf((float)(h[6] + h[7])) * (signs2 & mask2 ? -1 : 1);
+    const float h00 = __half2float(h[0]) + __half2float(h[1]);
+    const float h01 = __half2float(h[2]) + __half2float(h[3]);
+    const float h10 = __half2float(h[4]) + __half2float(h[5]);
+    const float h11 = __half2float(h[6]) + __half2float(h[7]);
+    bdot1.x += y[ 0].x * fabsf(h00) * (signs1 & mask1 ? -1 : 1);
+    bdot1.y += y[ 0].y * fabsf(h01) * (signs2 & mask1 ? -1 : 1);
+    bdot2.x += y[64].x * fabsf(h10) * (signs1 & mask2 ? -1 : 1);
+    bdot2.y += y[64].y * fabsf(h11) * (signs2 & mask2 ? -1 : 1);
 #endif
 }
 
