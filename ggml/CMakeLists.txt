@@ -58,8 +58,17 @@ endif()
 # errors, so explicitly check the processor as well.
 if (CMAKE_CROSSCOMPILING OR NOT (CMAKE_SYSTEM_PROCESSOR STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
     set(GGML_NATIVE_DEFAULT OFF)
+    set(GGML_CROSS_DIFFERENT_ARCH ON)
 else()
     set(GGML_NATIVE_DEFAULT ON)
+    set(GGML_CROSS_DIFFERENT_ARCH OFF)
+endif()
+
+# When cross-compiling with clang for Windows the default CodeView debug
+# info can trigger LLVM backend crashes.  In that case, prefer DWARF
+# debug info instead.
+if (GGML_CROSS_DIFFERENT_ARCH AND WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-gdwarf-4)
 endif()
 
 # general
