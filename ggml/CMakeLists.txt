@@ -69,6 +69,10 @@ endif()
 # debug info instead.
 if (GGML_CROSS_DIFFERENT_ARCH AND WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-gdwarf-4)
+    foreach(lang C CXX)
+        string(REGEX REPLACE "-Xclang[ ]+-gcodeview" "" CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}")
+        set(CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}" CACHE STRING "" FORCE)
+    endforeach()
 endif()
 
 # general
