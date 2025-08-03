@@ -17,8 +17,10 @@ RUN apt-get update && \
 COPY requirements.txt   requirements.txt
 COPY requirements       requirements
 
-RUN pip install --upgrade pip setuptools wheel \
-    && pip install -r requirements.txt
+# Allow installing Python packages into the system environment even though
+# the base image marks it as externally managed (PEP 668).
+RUN python3 -m pip install --upgrade --break-system-packages pip setuptools wheel \
+    && python3 -m pip install --break-system-packages -r requirements.txt
 
 WORKDIR /app
 
