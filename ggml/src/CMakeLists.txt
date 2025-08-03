@@ -257,6 +257,16 @@ if (GGML_BLAS)
 endif()
 
 set (GGML_SOURCES_IQK iqk/iqk_quantize.cpp)
+
+# iqk_quantize.cpp defines large static tables which can exceed the
+# 2GB limit imposed by the default small code model on x86_64.
+# When this happens, the linker reports relocation truncation errors.
+# Use the "medium" code model for this file so that references to the
+# large data sections are encoded with 64-bit relocations.
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|AMD64)" AND NOT MSVC)
+    set_source_files_properties(iqk/iqk_quantize.cpp
+        PROPERTIES COMPILE_OPTIONS "-mcmodel=medium")
+endif()
 set (GGML_HEADERS_IQK iqk/iqk_config.h)
 if (GGML_IQK_MUL_MAT)
     message(STATUS "Using optimized iqk matrix multiplications")
