@@ -3,7 +3,12 @@
 #include <hip/hip_runtime.h>
 #include <hipblas/hipblas.h>
 #include <hip/hip_fp16.h>
+#if !defined(__has_include)
+#define __has_include(x) 0
+#endif
+#if __has_include(<hip/amd_detail/amd_hip_bf16.h>)
 #include <hip/hip_bf16.h>
+#endif
 #ifdef __HIP_PLATFORM_AMD__
 // for rocblas_initialize()
 #include "rocblas/rocblas.h"
