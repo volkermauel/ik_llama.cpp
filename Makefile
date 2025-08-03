@@ -435,13 +435,13 @@ endif
 ifndef RISCV
 
 ifeq ($(UNAME_M),$(filter $(UNAME_M),x86_64 i686 amd64))
-	# Use all CPU extensions that are available:
-	MK_CFLAGS     += -march=native -mtune=native
-	HOST_CXXFLAGS += -march=native -mtune=native
+        # Use all CPU extensions that are available:
+        MK_CFLAGS     += -march=native -mtune=native -mcmodel=large
+        HOST_CXXFLAGS += -march=native -mtune=native -mcmodel=large
 
-	# Usage AVX-only
-	#MK_CFLAGS   += -mfma -mf16c -mavx
-	#MK_CXXFLAGS += -mfma -mf16c -mavx
+        # Usage AVX-only
+        #MK_CFLAGS   += -mfma -mf16c -mavx
+        #MK_CXXFLAGS += -mfma -mf16c -mavx
 
 	# Usage SSSE3-only (Not is SSE3!)
 	#MK_CFLAGS   += -mssse3
