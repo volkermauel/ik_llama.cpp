@@ -2,8 +2,8 @@ name: Windows Binaries
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
+    tags:
+      - '*'
 
 jobs:
   build-windows:

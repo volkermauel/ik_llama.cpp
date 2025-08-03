@@ -2,14 +2,15 @@ name: Build and push Docker images
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - '*'
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build:
+  build-base:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,15 +19,6 @@ jobs:
             tag: full
           - dockerfile: .devops/full-cuda.Dockerfile
             tag: full-cuda
-          - dockerfile: .devops/llama-cli.Dockerfile
-            tag: llama-cli
-          - dockerfile: .devops/llama-cli-cuda.Dockerfile
-            tag: llama-cli-cuda
-          - dockerfile: .devops/llama-server.Dockerfile
-            tag: llama-server
-          - dockerfile: .devops/llama-server-cuda.Dockerfile
-            tag: llama-server-cuda
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,3 +37,40 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ matrix.tag }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: build-base
+    strategy:
+      matrix:
+        include:
+          - dockerfile: .devops/llama-cli.Dockerfile
+            tag: llama-cli
+            build-args: ""
+          - dockerfile: .devops/llama-cli-cuda.Dockerfile
+            tag: llama-cli-cuda
+            build-args: |
+              FULL_CUDA_IMAGE=ghcr.io/volkermauel/ik_llama.cpp:full-cuda
+          - dockerfile: .devops/llama-server.Dockerfile
+            tag: llama-server
+            build-args: |
+              FULL_CUDA_IMAGE=ghcr.io/volkermauel/ik_llama.cpp:full-cuda
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ matrix.tag }}
+          build-args: ${{ matrix.build-args }}

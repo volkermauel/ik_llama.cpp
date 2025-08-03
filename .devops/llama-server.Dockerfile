@@ -1,27 +1,13 @@
-ARG UBUNTU_VERSION=22.04
+ARG FULL_CUDA_IMAGE=ghcr.io/volkermauel/ik_llama.cpp:full-cuda
 
-FROM ubuntu:$UBUNTU_VERSION AS build
-
-RUN apt-get update && \
-    apt-get install -y build-essential git libcurl4-openssl-dev curl
-
-WORKDIR /app
-
-COPY . .
-
-ENV LLAMA_CURL=1
-
-RUN make -j$(nproc) llama-server
-
-FROM ubuntu:$UBUNTU_VERSION AS runtime
+FROM ${FULL_CUDA_IMAGE}
 
 RUN apt-get update && \
-    apt-get install -y libcurl4-openssl-dev libgomp1 curl
-
-COPY --from=build /app/llama-server /llama-server
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV LC_ALL=C.utf8
 
 HEALTHCHECK CMD [ "curl", "-f", "http://localhost:8080/health" ]
 
-ENTRYPOINT [ "/llama-server" ]
+ENTRYPOINT ["/app/llama-server"]
