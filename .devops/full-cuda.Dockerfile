@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.5
 ARG UBUNTU_VERSION=24.04
 
 # This needs to generally match the container host's environment.
@@ -12,7 +13,7 @@ FROM ${BASE_CUDA_DEV_CONTAINER} AS build
 ARG CUDA_DOCKER_ARCH=all
 
 RUN apt-get update && \
-    apt-get install -y build-essential python3 python3-pip git libcurl4-openssl-dev libgomp1
+    apt-get install -y build-essential python3 python3-pip git libcurl4-openssl-dev libgomp1 ccache
 
 COPY requirements.txt   requirements.txt
 COPY requirements       requirements
@@ -33,7 +34,10 @@ ENV CUDA_DOCKER_ARCH=${CUDA_DOCKER_ARCH}
 ENV GGML_CUDA=1
 # Enable cURL
 ENV LLAMA_CURL=1
+# ccache configuration
+ENV CCACHE_DIR=/root/.cache/ccache
+ENV PATH=/usr/lib/ccache:$PATH
 
-RUN make -j$(nproc)
+RUN --mount=type=cache,target=/root/.cache/ccache make -j$(nproc)
 
 ENTRYPOINT ["/app/.devops/tools.sh"]
