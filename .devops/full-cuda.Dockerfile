@@ -13,7 +13,7 @@ FROM ${BASE_CUDA_DEV_CONTAINER} AS build
 ARG CUDA_DOCKER_ARCH=all
 
 RUN apt-get update && \
-    apt-get install -y build-essential python3 python3-pip git libcurl4-openssl-dev libgomp1 ccache
+    apt-get install -y build-essential python3 python3-pip git libcurl4-openssl-dev libgomp1
 
 COPY requirements.txt   requirements.txt
 COPY requirements       requirements
@@ -38,6 +38,6 @@ ENV LLAMA_CURL=1
 ENV CCACHE_DIR=/root/.cache/ccache
 ENV PATH=/usr/lib/ccache:$PATH
 
-RUN --mount=type=cache,target=/root/.cache/ccache make -j$(nproc)
+RUN make -j$(nproc)
 
 ENTRYPOINT ["/app/.devops/tools.sh"]
