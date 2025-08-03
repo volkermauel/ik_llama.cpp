@@ -18,28 +18,14 @@ jobs:
             tag: full
           - dockerfile: .devops/full-cuda.Dockerfile
             tag: full-cuda
-          - dockerfile: .devops/full-rocm.Dockerfile
-            tag: full-rocm
           - dockerfile: .devops/llama-cli.Dockerfile
             tag: llama-cli
           - dockerfile: .devops/llama-cli-cuda.Dockerfile
             tag: llama-cli-cuda
-          - dockerfile: .devops/llama-cli-intel.Dockerfile
-            tag: llama-cli-intel
-          - dockerfile: .devops/llama-cli-rocm.Dockerfile
-            tag: llama-cli-rocm
-          - dockerfile: .devops/llama-cli-vulkan.Dockerfile
-            tag: llama-cli-vulkan
           - dockerfile: .devops/llama-server.Dockerfile
             tag: llama-server
           - dockerfile: .devops/llama-server-cuda.Dockerfile
             tag: llama-server-cuda
-          - dockerfile: .devops/llama-server-intel.Dockerfile
-            tag: llama-server-intel
-          - dockerfile: .devops/llama-server-rocm.Dockerfile
-            tag: llama-server-rocm
-          - dockerfile: .devops/llama-server-vulkan.Dockerfile
-            tag: llama-server-vulkan
 
     steps:
       - name: Checkout repository
