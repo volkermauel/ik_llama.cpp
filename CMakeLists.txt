@@ -145,6 +145,11 @@ if (NOT MSVC)
     endif()
 endif()
 
+# Ensure large code model for 64-bit x86 builds to handle large static tables
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "amd64")
+    add_compile_options(-mcmodel=large)
+endif()
+
 #
 # build the library
 #
