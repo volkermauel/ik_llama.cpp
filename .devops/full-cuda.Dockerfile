@@ -13,9 +13,9 @@ FROM ${BASE_CUDA_DEV_CONTAINER} AS build
 ARG CUDA_DOCKER_ARCH=all
 
 RUN apt-get update && \
-    apt-get install -y build-essential python3 python3-pip git libcurl4-openssl-dev libgomp1 mold && \
-    update-alternatives --install /usr/bin/ld ld /usr/bin/mold 100 && \
-    update-alternatives --set ld /usr/bin/mold
+    apt-get install -y build-essential python3 python3-pip git libcurl4-openssl-dev libgomp1 lld && \
+    update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld 100 && \
+    update-alternatives --set ld /usr/bin/ld.lld
 
 COPY requirements.txt   requirements.txt
 COPY requirements       requirements
