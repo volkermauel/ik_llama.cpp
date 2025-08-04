@@ -439,6 +439,18 @@ ifeq ($(UNAME_M),$(filter $(UNAME_M),x86_64 i686 amd64))
         MK_CFLAGS     += -march=native -mtune=native -mcmodel=large
         HOST_CXXFLAGS += -march=native -mtune=native -mcmodel=large
 
+        # Position independent executables are incompatible with the large
+        # code model used above.  In environments where PIE is enabled by
+        # default (such as Debian/Ubuntu), linking will fail with errors like
+        # "relocation truncated to fit" unless PIE is explicitly disabled and
+        # linker relaxation is turned off.  The latter is also required by the
+        # CUDA build to avoid "failed to convert GOTPCREL" messages.
+        ifeq ($(UNAME_S),Linux)
+                MK_LDFLAGS  += -no-pie -Wl,--no-relax
+                MK_CFLAGS   += -fno-pie
+                MK_CXXFLAGS += -fno-pie
+        endif
+
         # Usage AVX-only
         #MK_CFLAGS   += -mfma -mf16c -mavx
         #MK_CXXFLAGS += -mfma -mf16c -mavx
