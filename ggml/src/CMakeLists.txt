@@ -379,6 +379,11 @@ if (GGML_CUDA)
             list(APPEND GGML_SOURCES_CUDA ${SRCS})
         endif()
 
+        set(GGML_CUDA_NO_RELAX_SRCS ggml-cuda.cu)
+        foreach(SRC ${GGML_CUDA_NO_RELAX_SRCS})
+            set_source_files_properties(${SRC} PROPERTIES COMPILE_OPTIONS "-Xnvlink=--no-relax")
+        endforeach()
+
         list(APPEND GGML_CDEF_PUBLIC GGML_USE_CUDA)
 
         add_compile_definitions(GGML_CUDA_DMMV_X=${GGML_CUDA_DMMV_X})
