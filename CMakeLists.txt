@@ -148,6 +148,10 @@ endif()
 # Ensure large code model for 64-bit x86 builds to handle large static tables
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "amd64")
     add_compile_options(-mcmodel=large)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        add_compile_options(-fno-pie)
+        add_link_options(-no-pie -Wl,--no-relax)
+    endif()
 endif()
 
 #
